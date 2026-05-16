@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Luxury Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --bg: #0B0E14; --gold: #FFD700; --cyan: #00F2FF; --panel: #1A1F26; }
+        body { background-color: var(--bg); color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        .luxury-gradient-text {
+            background: linear-gradient(180deg, #FFD700 0%, #B8860B 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .game-tab {
+            background: var(--panel);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .game-tab:hover {
+            border-color: var(--cyan);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.15);
+        }
+
+        .play-btn {
+            background: var(--gold);
+            color: var(--bg);
+            font-weight: 800;
+            transition: 0.3s;
+        }
+        .game-tab:hover .play-btn {
+            background: var(--cyan);
+            box-shadow: 0 0 20px var(--cyan);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+
+    <!-- Header -->
+    <div class="text-center mb-16">
+        <h1 class="luxury-gradient-text text-6xl md:text-8xl font-black tracking-tighter mb-2">ARCADE HUB</h1>
+        <p class="text-gray-500 tracking-[0.6em] text-xs uppercase">Premium Web Gaming</p>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- Tab: Helix Jump -->
+        <div class="game-tab p-8 rounded-3xl flex flex-col items-center group" onclick="location.href='helix.html'">
+            <div class="w-24 h-24 bg-black rounded-full mb-6 border-2 border-[#FFD700] flex items-center justify-center shadow-[0_0_20px_rgba(255,215,0,0.2)]">
+                <span class="text-4xl group-hover:scale-125 transition-transform duration-500">🌀</span>
+            </div>
+            <h2 class="text-3xl font-bold mb-3">HELIX JUMP</h2>
+            <p class="text-gray-400 text-sm text-center mb-8">Trải nghiệm không gian 3D, chinh phục những tầng tháp vô tận.</p>
+            <button class="play-btn w-full py-4 rounded-xl">BẮT ĐẦU CHƠI</button>
+        </div>
+
+        <!-- Tab: Các game khác (Sẽ thêm sau) -->
+        <div class="game-tab p-8 rounded-3xl flex flex-col items-center opacity-40 grayscale pointer-events-none">
+            <div class="w-24 h-24 bg-gray-900 rounded-full mb-6 border-2 border-gray-700 flex items-center justify-center">
+                <span class="text-4xl text-gray-700">🔒</span>
+            </div>
+            <h2 class="text-3xl font-bold mb-3 text-gray-600">MORE GAMES</h2>
+            <p class="text-gray-600 text-sm text-center mb-8">Sắp ra mắt các siêu phẩm tiếp theo trong bộ sưu tập.</p>
+            <button class="bg-gray-800 text-gray-700 w-full py-4 rounded-xl">COMING SOON</button>
+        </div>
+
+    </div>
+
+    <footer class="mt-20 text-gray-600 text-[10px] tracking-widest uppercase">
+       Developed with Vibe Code
+    </footer>
+
+</body>
+</html>

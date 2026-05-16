@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helix Jump - Black Ball Edition</title>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+            "gsap": "https://cdn.skypack.dev/gsap"
+        }
+    }
+    </script>
+
+    <style>
+        body {
+            margin: 0; overflow: hidden; background-color: #111;
+            background-image: repeating-conic-gradient(#222 0deg 90deg, #333 90deg 180deg);
+            background-size: 128px 128px;
+            animation: scrollDiagonal 10s linear infinite;
+        }
+        @keyframes scrollDiagonal { from { background-position: 0 0; } to { background-position: 256px 256px; } }
+        
+        #score {
+            position: fixed; top: 2vw; right: 2vw;
+            font-size: clamp(64px, 8vw, 144px);
+            font-family: 'Arial', sans-serif; font-weight: bold;
+            color: #ffffff; z-index: 9999; pointer-events: none;
+            text-shadow: 4px 4px 0px #000;
+        }
+        .back-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 10000;
+            color: #00ff00; text-decoration: none; font-weight: bold;
+            font-family: sans-serif; border: 2px solid #00ff00;
+            padding: 8px 15px; border-radius: 5px; background: rgba(0,0,0,0.8);
+            transition: 0.3s;
+        }
+        .back-btn:hover { background: #00ff00; color: #000; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">← MENU</a>
+    <div id="score">0</div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { gsap } from 'gsap';
+
+        // --- Cập nhật GameOptions với màu đen (0x000000) ---
+        const GameOptions = {
+            columnRadius        : 1,
+            columnColor         : 0x00ff00,         
+            totalPlaftforms     : 10,
+            platformGap         : 3,
+            platformRadius      : 3,
+            platformHeight      : 1,
+            minThetaLength      : Math.PI * 1.5,
+            maxThetaLength      : Math.PI * 1.85,
+            rotationSpeed       : 6,
+            gapColor            : 0x00ff00,         
+            ballRadius          : 0.4,
+            ballColor           : 0x000000,         // Đổi sang màu ĐEN
+            spikeRadius         : 0.2,
+            spikeHeight         : 0.6,
+            spikeColor          : 0x000000,         // Đổi sang màu ĐEN
+            gravity             : 10,
+            bounceImpulse       : 6,
+            spikeProbability    : 0.25,
+            platformColors      : [0xff0000, 0x0000ff, 0xffff00, 0xff00ff]
+        };
+
+        class Ball extends THREE.Mesh {
+            constructor() {
+                const material = new THREE.MeshStandardMaterial({ color: GameOptions.ballColor, roughness: 0.2 });
+                const geometry = new THREE.SphereGeometry(GameOptions.ballRadius, 32, 32);
+                super(geometry, material);
+                this.castShadow = true;
+                this.position.set(0, 2, GameOptions.platformRadius - GameOptions.ballRadius);
+                this.velocity = 0;
+            }
+            update(delta) {
+                this.velocity -= GameOptions.gravity * delta;
+                this.position.y += this.velocity * delta;
+            }
+            bounce() {
+                this.velocity = GameOptions.bounceImpulse;
+            }
+        }
+
+        class Platform extends THREE.Group {
+            constructor(posY, hasSpikes) {
+                super();
+                this.spikes = [];
+                const angle = hasSpikes ? Math.random() * Math.PI * 2 : -Math.PI / 2;
+                const material = new THREE.MeshStandardMaterial({
+                    color: GameOptions.platformColors[Math.floor(Math.random() * GameOptions.platformColors.length)]
+                });
+                this.thetaLength = hasSpikes ? GameOptions.minThetaLength + Math.random() * (GameOptions.maxThetaLength - GameOptions.minThetaLength) : Math.PI;
+
+                const cylinderGeometry = new THREE.CylinderGeometry(GameOptions.platformRadius, GameOptions.platformRadius, GameOptions.platformHeight, 32, 1, false, 0, this.thetaLength);
+                const cylinder = new THREE.Mesh(cylinderGeometry, material);
+                cylinder.castShadow = true; cylinder.receiveShadow = true;
+                this.add(cylinder);
+
+                const gapMaterial = new THREE.MeshStandardMaterial({ color: GameOptions.gapColor });
+                const gapGeometry = new THREE.CylinderGeometry(GameOptions.platformRadius, GameOptions.platformRadius, GameOptions.platformHeight, 32, 1, false, this.thetaLength, Math.PI * 2 - this.thetaLength);
+                const gap = new THREE.Mesh(gapGeometry, gapMaterial);
+                gap.castShadow = true; gap.receiveShadow = true;
+                this.add(gap);
+
+                if (hasSpikes) {
+                    const spikeStep = Math.PI / 16;
+                    for (let aS = Math.PI / 60; aS < this.thetaLength - Math.PI / 60; aS += spikeStep) {
+                        if (Math.random() < GameOptions.spikeProbability) {
+                            const sGeo = new THREE.ConeGeometry(GameOptions.spikeRadius, GameOptions.spikeHeight);
+                            const sMat = new THREE.MeshStandardMaterial({ color: GameOptions.spikeColor, roughness: 0.2 });
+                            const spike = new THREE.Mesh(sGeo, sMat);
+                            const jitter = (Math.random() * 4 - 2) * (Math.PI / 180);
+                            const fA = aS + jitter;
+                            spike.position.x = Math.cos(-fA + Math.PI / 2) * (GameOptions.platformRadius - GameOptions.ballRadius);
+                            spike.position.z = Math.sin(-fA + Math.PI / 2) * (GameOptions.platformRadius - GameOptions.ballRadius);
+                            spike.position.y = GameOptions.platformHeight / 2 + GameOptions.spikeHeight / 2;
+                            spike.castShadow = true; spike.receiveShadow = true;
+                            this.add(spike);
+                            this.spikes.push(spike);
+                        }
+                    }
+                }
+                this.position.y = posY;
+                this.rotation.y = angle;
+            }
+
+            fadeAndRemove(parentGroup) {
+                this.children.forEach(child => { if (child.material) child.material.color.set(0xffffff); });
+                gsap.to(this.position, {
+                    y: this.position.y + 5, duration: 1, ease: 'power2.out',
+                    onComplete: () => { parentGroup.remove(this); }
+                });
+            }
+        }
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 4, 12);
+        camera.lookAt(0, -2, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setClearColor(0x000000, 0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        const light = new THREE.PointLight(0xffffff, 40);
+        light.position.set(5, 10, 7.5);
+        light.castShadow = true;
+        scene.add(light);
+
+        const column = new THREE.Mesh(
+            new THREE.CylinderGeometry(GameOptions.columnRadius, GameOptions.columnRadius, 100),
+            new THREE.MeshStandardMaterial({ color: GameOptions.columnColor })
+        );
+        column.receiveShadow = true;
+        scene.add(column);
+
+        const platformGroup = new THREE.Group();
+        scene.add(platformGroup);
+        const platformGraveyard = new THREE.Group();
+        scene.add(platformGraveyard);
+
+        for (let i = 0; i < GameOptions.totalPlaftforms; i++) {
+            platformGroup.add(new Platform(GameOptions.platformGap * -i, i > 0));
+        }
+
+        const ball = new Ball();
+        scene.add(ball);
+
+        const keys = {};
+        window.addEventListener('keydown', (e) => { const k = e.key.toLowerCase(); if(!keys[k]) keys[k] = Date.now(); });
+        window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+        const clock = new THREE.Clock();
+        let gameOver = false, score = 0;
+        const scoreElement = document.getElementById('score');
+
+        function update() {
+            requestAnimationFrame(update);
+            if (gameOver) { renderer.render(scene, camera); return; }
+
+            const delta = clock.getDelta();
+            const topP = platformGroup.children[0];
+
+            camera.position.y = THREE.MathUtils.lerp(camera.position.y, topP.position.y + 4, 0.03);
+            camera.lookAt(0, THREE.MathUtils.lerp(camera.position.y - 6, topP.position.y - 2, 0.03), 0);
+            light.position.y = camera.position.y + 6;
+
+            let dir = 0;
+            if (keys['a'] && !keys['d']) dir = 1;
+            else if (keys['d'] && !keys['a']) dir = -1;
+            else if (keys['d'] && keys['a']) dir = (keys['a'] > keys['d']) ? 1 : -1;
+
+            platformGroup.rotation.y += dir * GameOptions.rotationSpeed * delta;
+            platformGraveyard.rotation.y += dir * GameOptions.rotationSpeed * delta;
+
+            ball.update(delta);
+
+            for (const spike of topP.spikes) {
+                const tip = new THREE.Vector3(0, GameOptions.spikeHeight / 2, 0);
+                spike.localToWorld(tip);
+                if (tip.distanceTo(ball.position) < GameOptions.ballRadius * 0.9) {
+                    gameOver = true;
+                    gsap.to(camera.position, {
+                        z: ball.position.z + 4,
+                        x: tip.x > 0 ? ball.position.x + 4 : ball.position.x - 4,
+                        y: ball.position.y,
+                        duration: 2, ease: 'power2.out',
+                        onUpdate: () => camera.lookAt(ball.position)
+                    });
+                    gsap.to(ball.material.color, { r: 1, g: 1, b: 1, duration: 2 }); // Đổi sang trắng khi chết để dễ thấy
+                    setTimeout(() => location.reload(), 3000);
+                    return;
+                }
+            }
+
+            if (ball.velocity < 0) {
+                const impactPoint = topP.position.y + GameOptions.platformHeight / 2 + GameOptions.ballRadius;
+                if (ball.position.y < impactPoint) {
+                    const startA = ((topP.rotation.y + platformGroup.rotation.y) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+                    const endA = (startA + topP.thetaLength) % (Math.PI * 2);
+                    const ballAngle = 0; 
+                    let onPlatform = false;
+                    if (startA < endA) { if (ballAngle >= startA && ballAngle <= endA) onPlatform = true; }
+                    else { if (ballAngle >= startA || ballAngle <= endA) onPlatform = true; }
+
+                    if (!onPlatform) {
+                        platformGroup.remove(topP);
+                        platformGraveyard.add(topP);
+                        topP.fadeAndRemove(platformGraveyard);
+                        column.position.y -= GameOptions.platformGap;
+                        const lastP = platformGroup.children[platformGroup.children.length - 1];
+                        platformGroup.add(new Platform(lastP.position.y - GameOptions.platformGap, true));
+                        score++;
+                        scoreElement.textContent = score.toString();
+                    } else {
+                        ball.position.y = impactPoint;
+                        ball.bounce();
+                    }
+                }
+            }
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        update();
+    </script>
+</body>
+</html>
