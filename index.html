@@ -42,7 +42,6 @@
             box-shadow: 0 0 20px var(--cyan);
         }
 
-        /* Hiệu ứng riêng cho Geometry Vibes để tạo điểm nhấn */
         .geometry-glow:hover {
             border-color: #A2FF00;
             box-shadow: 0 10px 30px rgba(162, 255, 0, 0.2);
@@ -50,6 +49,17 @@
         .geometry-glow:hover .play-btn {
             background: #A2FF00;
             box-shadow: 0 0 20px #A2FF00;
+        }
+
+        /* Hiệu ứng riêng cho Stickman Clash - Màu Cam Đỏ rực cháy */
+        .stickman-glow:hover {
+            border-color: #FF4500;
+            box-shadow: 0 10px 30px rgba(255, 69, 0, 0.3);
+        }
+        .stickman-glow:hover .play-btn {
+            background: #FF4500;
+            color: white;
+            box-shadow: 0 0 20px #FF4500;
         }
     </style>
 </head>
@@ -61,36 +71,46 @@
         <p class="text-gray-500 tracking-[0.6em] text-xs uppercase">Premium Web Gaming</p>
     </div>
 
-    <!-- Tabs Container (Đã chỉnh lên max-w-6xl và 3 cột) -->
-    <div class="max-w-6xl w-full grid grid-cols-1 md:grid-cols-3 gap-8">
+    <!-- Tabs Container - Chỉnh lên tối đa 4 cột cho màn hình lớn -->
+    <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         
         <!-- Tab: Helix Jump -->
         <div class="game-tab p-8 rounded-3xl flex flex-col items-center group" onclick="location.href='helix.html'">
             <div class="w-24 h-24 bg-black rounded-full mb-6 border-2 border-[#FFD700] flex items-center justify-center shadow-[0_0_20px_rgba(255,215,0,0.2)]">
                 <span class="text-4xl group-hover:scale-125 transition-transform duration-500">🌀</span>
             </div>
-            <h2 class="text-3xl font-bold mb-3 uppercase">Helix Jump</h2>
-            <p class="text-gray-400 text-sm text-center mb-8">Trải nghiệm không gian 3D, chinh phục những tầng tháp vô tận.</p>
+            <h2 class="text-2xl font-bold mb-3 uppercase">Helix Jump</h2>
+            <p class="text-gray-400 text-sm text-center mb-8">Chinh phục những tầng tháp vô tận trong không gian 3D.</p>
             <button class="play-btn w-full py-4 rounded-xl">BẮT ĐẦU CHƠI</button>
         </div>
 
-        <!-- Tab: Geometry Vibes (Tab mới) -->
+        <!-- Tab: Geometry Vibes -->
         <div class="game-tab geometry-glow p-8 rounded-3xl flex flex-col items-center group" onclick="location.href='Geometryvibes/index.html'">
             <div class="w-24 h-24 bg-black rounded-full mb-6 border-2 border-[#A2FF00] flex items-center justify-center shadow-[0_0_20px_rgba(162,255,0,0.2)]">
                 <span class="text-4xl group-hover:rotate-12 transition-transform duration-500">🟦</span>
             </div>
-            <h2 class="text-3xl font-bold mb-3 uppercase">Geometry Vibes</h2>
-            <p class="text-gray-400 text-sm text-center mb-8">Thử thách phản xạ cực hạn với những làn sóng âm nhạc sôi động.</p>
+            <h2 class="text-2xl font-bold mb-3 uppercase">Geometry Vibes</h2>
+            <p class="text-gray-400 text-sm text-center mb-8">Thử thách phản xạ cực hạn với làn sóng âm nhạc sôi động.</p>
+            <button class="play-btn w-full py-4 rounded-xl">BẮT ĐẦU CHƠI</button>
+        </div>
+
+        <!-- Tab: Stickman Clash (TAB MỚI) -->
+        <div class="game-tab stickman-glow p-8 rounded-3xl flex flex-col items-center group" onclick="location.href='StickmanClash/index.html'">
+            <div class="w-24 h-24 bg-black rounded-full mb-6 border-2 border-[#FF4500] flex items-center justify-center shadow-[0_0_20px_rgba(255,69,0,0.2)]">
+                <span class="text-4xl group-hover:scale-110 transition-transform duration-500">🤺</span>
+            </div>
+            <h2 class="text-2xl font-bold mb-3 uppercase text-center">Stickman Clash</h2>
+            <p class="text-gray-400 text-sm text-center mb-8">Trận chiến người que nảy lửa với kỹ năng chiến đấu đỉnh cao.</p>
             <button class="play-btn w-full py-4 rounded-xl">BẮT ĐẦU CHƠI</button>
         </div>
 
         <!-- Tab: 8 Ball Pool -->
         <div class="game-tab p-8 rounded-3xl flex flex-col items-center group" onclick="location.href='pool/index.html'">
             <div class="w-24 h-24 bg-black rounded-full mb-6 border-2 border-[#00F2FF] flex items-center justify-center shadow-[0_0_20px_rgba(0,242,255,0.2)]">
-                <span class="text-4xl group-hover:rotate-12 transition-transform duration-500">🎱</span>
+                <span class="text-4xl group-hover:rotate-12 transition-transform duration-500">8️⃣</span>
             </div>
-            <h2 class="text-3xl font-bold mb-3 uppercase">8 Ball Pool</h2>
-            <p class="text-gray-400 text-sm text-center mb-8">Game bida đẳng cấp với vật lý chân thực và đồ họa Arcade.</p>
+            <h2 class="text-2xl font-bold mb-3 uppercase">8 Ball Pool</h2>
+            <p class="text-gray-400 text-sm text-center mb-8">Game bida đẳng cấp với vật lý chân thực và đồ họa cực đẹp.</p>
             <button class="play-btn w-full py-4 rounded-xl">BẮT ĐẦU CHƠI</button>
         </div>
 

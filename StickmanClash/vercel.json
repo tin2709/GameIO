@@ -1,0 +1,10 @@
+{
+  "headers": [
+    {
+      "source": "/Build/Webgl.wasm",
+      "headers": [
+        { "key": "Content-Type", "value": "application/wasm" }
+      ]
+    }
+  ]
+}
